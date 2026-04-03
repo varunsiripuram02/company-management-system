@@ -5,15 +5,11 @@ import pandas as pd
 BASE_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="Company System", layout="wide")
-
-# =========================
-# 🔐 LOGIN SYSTEM (BASIC)
-# =========================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.title("🔐 Login")
+    st.title("Login")
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -21,18 +17,13 @@ if not st.session_state.logged_in:
     if st.button("Login"):
         if username == "admin" and password == "admin":
             st.session_state.logged_in = True
-            st.success("Login successful ✅")
+            st.success("Login successful ")
             st.rerun()
         else:
-            st.error("Invalid credentials ❌")
+            st.error("Invalid credentials !")
 
     st.stop()
-
-# =========================
-# 📊 DASHBOARD
-# =========================
-st.title("🚀 Company Management System")
-
+st.title("Company Management System")
 menu = st.sidebar.selectbox(
     "Menu",
     [
@@ -45,27 +36,15 @@ menu = st.sidebar.selectbox(
     ]
 )
 
-# =========================
-# DASHBOARD
-# =========================
 if menu == "Dashboard":
-    st.header("📊 Dashboard")
-
+    st.header("Dashboard")
     res = requests.get(f"{BASE_URL}/dashboard").json()
-
     col1, col2, col3 = st.columns(3)
-
     col1.metric("Employees", res["total_employees"])
     col2.metric("Projects", res["total_projects"])
     col3.metric("Applications", res["total_applications"])
-
-# =========================
-# EMPLOYEES
-# =========================
 elif menu == "Employees":
-    st.header("👤 Employees")
-
-    # Add Employee
+    st.header("Employees")
     name = st.text_input("Name")
     email = st.text_input("Email")
     skills = st.text_input("Skills")
@@ -77,18 +56,12 @@ elif menu == "Employees":
             "skills": skills
         })
         st.write(res.json())
-
-    # Show table
     data = requests.get(f"{BASE_URL}/employees").json()
     df = pd.DataFrame(data)
     st.dataframe(df)
 
-# =========================
-# PROJECTS
-# =========================
 elif menu == "Projects":
-    st.header("📁 Projects")
-
+    st.header("Projects")
     name = st.text_input("Project Name")
     desc = st.text_area("Description")
     skills = st.text_input("Skills")
@@ -108,19 +81,13 @@ elif menu == "Projects":
     data = requests.get(f"{BASE_URL}/projects").json()
     df = pd.DataFrame(data)
     st.dataframe(df)
-
-# =========================
-# APPLY (AUTO FETCH IDs 🔥)
-# =========================
+    
 elif menu == "Apply":
-    st.header("📩 Apply to Project")
-
+    st.header("Apply to Project")
     employees = requests.get(f"{BASE_URL}/employees").json()
     projects = requests.get(f"{BASE_URL}/projects").json()
-
     emp_dict = {f"{e['name']} (ID {e['id']})": e["id"] for e in employees}
     proj_dict = {f"{p['name']} (ID {p['id']})": p["id"] for p in projects}
-
     emp_choice = st.selectbox("Select Employee", list(emp_dict.keys()))
     proj_choice = st.selectbox("Select Project", list(proj_dict.keys()))
 
@@ -130,42 +97,29 @@ elif menu == "Apply":
             "project_id": proj_dict[proj_choice]
         })
         st.write(res.json())
-
-# =========================
-# APPROVE
-# =========================
+        
 elif menu == "Approve":
-    st.header("✅ Approve Applications")
-
+    st.header("Approve Applications")
     app_id = st.number_input("Application ID", min_value=1)
     action = st.selectbox("Action", ["accept", "reject"])
-
     if st.button("Submit"):
         res = requests.post(f"{BASE_URL}/approve", json={
             "application_id": app_id,
             "action": action
         })
         st.write(res.json())
-
-# =========================
-# WORK LOG
-# =========================
+        
 elif menu == "Work Log":
-    st.header("⏱️ Work Log")
-
+    st.header("Work Log")
     employees = requests.get(f"{BASE_URL}/employees").json()
     projects = requests.get(f"{BASE_URL}/projects").json()
-
     emp_dict = {f"{e['name']} (ID {e['id']})": e["id"] for e in employees}
     proj_dict = {f"{p['name']} (ID {p['id']})": p["id"] for p in projects}
-
     emp_choice = st.selectbox("Employee", list(emp_dict.keys()))
     proj_choice = st.selectbox("Project", list(proj_dict.keys()))
-
     date = st.text_input("Date")
     hours = st.number_input("Hours", min_value=1)
     task = st.text_area("Task")
-
     if st.button("Submit Work"):
         res = requests.post(f"{BASE_URL}/add_worklog", json={
             "employee_id": emp_dict[emp_choice],
