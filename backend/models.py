@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 
-# 👤 Employee Table
 class Employee(Base):
     __tablename__ = "employees"
 
@@ -12,8 +11,6 @@ class Employee(Base):
     status = Column(String)
     role = Column(String)
 
-
-# 📁 Project Table
 class Project(Base):
     __tablename__ = "projects"
 
@@ -26,8 +23,6 @@ class Project(Base):
     status = Column(String)
     techlead_id = Column(Integer)
 
-
-# 📩 Application Table
 class Application(Base):
     __tablename__ = "applications"
 
@@ -37,8 +32,6 @@ class Application(Base):
     match_percentage = Column(Integer)
     status = Column(String)
 
-
-# ⏱️ Work Log Table
 class WorkLog(Base):
     __tablename__ = "worklogs"
 
@@ -49,8 +42,6 @@ class WorkLog(Base):
     hours = Column(Integer)
     task = Column(String)
 
-
-# 🔥 Skill Matching Function
 def skill_match(employee_skills, project_skills):
     emp = set([s.strip().lower() for s in employee_skills.split(",")])
     proj = set([s.strip().lower() for s in project_skills.split(",")])
