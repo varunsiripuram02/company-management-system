@@ -5,13 +5,7 @@ import models
 
 app = FastAPI()
 
-# ✅ Create tables
 models.Base.metadata.create_all(bind=engine)
-
-
-# =========================
-# 🔹 SCHEMAS
-# =========================
 
 class EmployeeCreate(BaseModel):
     name: str
@@ -44,17 +38,10 @@ class WorkLogCreate(BaseModel):
     hours: int
     task: str
 
-
-# =========================
-# 🔹 APIs
-# =========================
-
 @app.get("/")
 def home():
-    return {"message": "Backend running 🚀"}
+    return {"message": "Backend running "}
 
-
-# ✅ Add Employee
 @app.post("/add_employee")
 def add_employee(emp: EmployeeCreate):
     db = SessionLocal()
@@ -62,7 +49,7 @@ def add_employee(emp: EmployeeCreate):
     existing = db.query(models.Employee).filter(models.Employee.email == emp.email).first()
     if existing:
         db.close()
-        return {"error": "Email already exists ❌"}
+        return {"error": "Email already exists "}
 
     new_emp = models.Employee(
         name=emp.name,
@@ -76,10 +63,8 @@ def add_employee(emp: EmployeeCreate):
     db.commit()
     db.close()
 
-    return {"message": "Employee added successfully ✅"}
+    return {"message": "Employee added successfully "}
 
-
-# ✅ Create Project
 @app.post("/create_project")
 def create_project(project: ProjectCreate):
     db = SessionLocal()
@@ -87,7 +72,7 @@ def create_project(project: ProjectCreate):
     existing = db.query(models.Project).filter(models.Project.name == project.name).first()
     if existing:
         db.close()
-        return {"error": "Project already exists ❌"}
+        return {"error": "Project already exists "}
 
     new_project = models.Project(
         name=project.name,
@@ -103,10 +88,8 @@ def create_project(project: ProjectCreate):
     db.commit()
     db.close()
 
-    return {"message": "Project created successfully ✅"}
+    return {"message": "Project created successfully "}
 
-
-# ✅ Apply to Project
 @app.post("/apply")
 def apply_to_project(req: ApplyRequest):
     db = SessionLocal()
@@ -138,8 +121,6 @@ def apply_to_project(req: ApplyRequest):
         "missing_skills": missing
     }
 
-
-# ✅ Approval System
 @app.post("/approve")
 def approve_application(req: ApprovalRequest):
     db = SessionLocal()
@@ -163,25 +144,20 @@ def approve_application(req: ApprovalRequest):
     db.commit()
     db.close()
 
-    return {"message": f"Application {req.action}ed successfully ✅"}
+    return {"message": f"Application {req.action}ed successfully "}
 
-
-# 🔥 WORK LOG SYSTEM (FINAL FEATURE)
 @app.post("/add_worklog")
 def add_worklog(log: WorkLogCreate):
     db = SessionLocal()
 
-    # 🔍 Check employee exists
     employee = db.query(models.Employee).filter(models.Employee.id == log.employee_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    # 🔍 Check project exists
     project = db.query(models.Project).filter(models.Project.id == log.project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    # 💾 Save work log
     work = models.WorkLog(
         employee_id=log.employee_id,
         project_id=log.project_id,
@@ -194,8 +170,7 @@ def add_worklog(log: WorkLogCreate):
     db.commit()
     db.close()
 
-    return {"message": "Work log added successfully ✅"}
-# 🔥 GET ALL EMPLOYEES
+    return {"message": "Work log added successfully "}
 @app.get("/employees")
 def get_employees():
     db = SessionLocal()
@@ -203,8 +178,6 @@ def get_employees():
     db.close()
     return employees
 
-
-# 🔥 GET ALL PROJECTS
 @app.get("/projects")
 def get_projects():
     db = SessionLocal()
@@ -212,8 +185,6 @@ def get_projects():
     db.close()
     return projects
 
-
-# 🔥 DASHBOARD STATS
 @app.get("/dashboard")
 def dashboard():
     db = SessionLocal()
